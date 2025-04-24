@@ -1,0 +1,20 @@
+name: Validate and Assign SID
+
+on:
+  pull_request:
+    paths:
+      - 'requests/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y pyang
+      - name: Process Request
+        run: |
+          find requests -name '*.json' | while read req; do
+            python3 scripts/process_request.py "$req"
+          done
+

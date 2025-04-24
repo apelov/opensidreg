@@ -20,21 +20,25 @@ YEARLY_LIMIT = 10000
 def load_registry():
     if REGISTRY_FILE.exists():
         return json.loads(REGISTRY_FILE.read_text())
-    return {"last_updated": None, "assigned": []}
+    return {"registry_range": [1000000, 1999999], "last_updated": None, "assigned": []}
 
 def save_registry(registry):
     registry["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d")
     REGISTRY_FILE.write_text(json.dumps(registry, indent=2))
 
 def allocate_sid_range(existing, preferred_start, size):
+    registry_range = load_registry()["registry_range"]
     used = set()
     for entry in existing:
         r = entry["range"]
         used.update(range(r[0], r[1] + 1))
 
-    start = preferred_start if preferred_start else 20000
-    while any((start + i) in used for i in range(size)):
+    start = preferred_start if preferred_start else registry_range[0]
+    while any((start + i) in used for i in range(size)) or start + size - 1 > registry_range[1]:
         start += size
+        if start + size - 1 > registry_range[1]:
+            raise ValueError("No available SID range within registry bounds.")
+
     return [start, start + size - 1]
 
 def compile_yang(context_path):

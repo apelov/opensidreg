@@ -1,7 +1,0 @@
-{
-  "module": "test-module",
-  "range_hint": {
-    "size": 1000,
-    "preferred_start": 1001000
-  }
-}

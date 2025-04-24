@@ -10,11 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y pyang
+
+      # Step 1: Install Python and pip (if not already present)
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # You can use a different version if needed
+
+      # Step 2: Install pyang using pip
+      - name: Install pyang
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyang
+
+      # Step 3: Run the process_request.py script
       - name: Process Request
         run: |
-          find requests -name '*.json' | while read req; do
-            python3 scripts/process_request.py "$req"
-          done
-
+          python3 scripts/process_request.py requests/alice/2025-04-example.json

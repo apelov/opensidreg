@@ -1,4 +1,0 @@
-module test-module {
-  namespace "urn:test";
-  prefix "tm";
-}
